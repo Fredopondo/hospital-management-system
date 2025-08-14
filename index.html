@@ -1,0 +1,3511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASUMBI MISSION HOSPITAL</title>
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- FullCalendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+  
+  <style id="app-style">
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+    }
+    
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+    
+    .main-content {
+      margin-left: 250px;
+      transition: all 0.3s;
+    }
+    
+    .sidebar-collapsed .sidebar {
+      width: 70px;
+    }
+    
+    .sidebar-collapsed .main-content {
+      margin-left: 70px;
+    }
+    
+    .sidebar-collapsed .menu-text {
+      display: none;
+    }
+    
+    .sidebar-collapsed .sidebar-logo span {
+      display: none;
+    }
+    
+    .menu-item {
+      transition: all 0.2s;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-item.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-left: 4px solid #ffffff;
+    }
+    
+    .card {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-input {
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      padding: 8px 12px;
+      transition: border 0.2s;
+    }
+    
+    .form-input:focus {
+      border: 1px solid #3b82f6;
+      outline: none;
+    }
+    
+    .btn {
+      border-radius: 5px;
+      padding: 8px 16px;
+      transition: all 0.2s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .slide-in {
+      position: fixed;
+      top: 0;
+      right: -500px;
+      width: 500px;
+      height: 100vh;
+      background-color: white;
+      z-index: 50;
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+      transition: right 0.3s;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .slide-in.active {
+      right: 0;
+    }
+    
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 40;
+      display: none;
+    }
+    
+    .overlay.active {
+      display: block;
+    }
+    
+    /* Animation for notifications */
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+    
+    .notification {
+      animation: fadeInOut 5s forwards;
+    }
+    
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    
+    .loading div {
+      position: absolute;
+      border: 4px solid #3b82f6;
+      opacity: 1;
+      border-radius: 50%;
+      animation: loading 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    
+    .loading div:nth-child(2) {
+      animation-delay: -0.5s;
+    }
+    
+    @keyframes loading {
+      0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+      100% {
+        top: 0px;
+        left: 0px;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+      }
+    }
+    
+    .low-stock {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 70px;
+      }
+      
+      .main-content {
+        margin-left: 70px;
+      }
+      
+      .menu-text {
+        display: none;
+      }
+      
+      .sidebar-logo span {
+        display: none;
+      }
+      
+      .slide-in {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <!-- Login Screen -->
+  <div id="login-screen" class="flex h-screen w-full items-center justify-center bg-gray-100">
+    <div class="w-full max-w-md overflow-hidden rounded-lg bg-white shadow-xl">
+      <div class="bg-blue-600 py-4">
+        <h2 class="text-center text-2xl font-bold text-white">HospitalCare Pro</h2>
+      </div>
+      
+      <div class="p-8">
+        <h3 class="mb-6 text-center text-gray-600">Sign in to your account</h3>
+        
+        <form id="login-form" class="space-y-6">
+          <div>
+            <label class="text-sm font-medium text-gray-700" for="username">Username</label>
+            <input id="username" type="text" class="form-input mt-1 block w-full" placeholder="Enter your username">
+          </div>
+          
+          <div>
+            <label class="text-sm font-medium text-gray-700" for="password">Password</label>
+            <input id="password" type="password" class="form-input mt-1 block w-full" placeholder="Enter your password">
+          </div>
+          
+          <div>
+            <label class="text-sm font-medium text-gray-700" for="role">Role</label>
+            <select id="role" class="form-input mt-1 block w-full">
+              <option value="admin">Admin</option>
+              <option value="doctor">Doctor</option>
+              <option value="receptionist">Receptionist</option>
+              <option value="pharmacist">Pharmacist</option>
+              <option value="lab_technician">Lab Technician</option>
+            </select>
+          </div>
+          
+          <button type="submit" class="btn w-full rounded bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700">
+            Sign In
+          </button>
+        </form>
+        
+        <div class="mt-4 text-center text-sm text-gray-500">
+          <p>© 2025 HospitalCare Pro. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Application -->
+  <div id="app-container" class="hidden">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar bg-blue-900 text-white">
+      <div class="sidebar-logo flex items-center justify-center p-4 border-b border-blue-800">
+        <i class="fas fa-hospital-alt text-2xl"></i>
+        <span class="ml-2 text-lg font-bold">HospitalCare Pro</span>
+      </div>
+      
+      <div class="mt-8 flex flex-col">
+        <div class="menu-item px-4 py-3" data-page="dashboard">
+          <div class="flex items-center">
+            <i class="fas fa-tachometer-alt w-6"></i>
+            <span class="menu-text ml-4">Dashboard</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" data-page="patients">
+          <div class="flex items-center">
+            <i class="fas fa-user-injured w-6"></i>
+            <span class="menu-text ml-4">Patient Management</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" data-page="appointments">
+          <div class="flex items-center">
+            <i class="fas fa-calendar-check w-6"></i>
+            <span class="menu-text ml-4">Appointments</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" data-page="staff">
+          <div class="flex items-center">
+            <i class="fas fa-user-md w-6"></i>
+            <span class="menu-text ml-4">Staff Management</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" data-page="billing">
+          <div class="flex items-center">
+            <i class="fas fa-file-invoice-dollar w-6"></i>
+            <span class="menu-text ml-4">Billing & Payments</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" data-page="pharmacy">
+          <div class="flex items-center">
+            <i class="fas fa-pills w-6"></i>
+            <span class="menu-text ml-4">Pharmacy</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" data-page="laboratory">
+          <div class="flex items-center">
+            <i class="fas fa-flask w-6"></i>
+            <span class="menu-text ml-4">Laboratory</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" data-page="reports">
+          <div class="flex items-center">
+            <i class="fas fa-chart-bar w-6"></i>
+            <span class="menu-text ml-4">Reports</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-auto border-t border-blue-800">
+        <div class="menu-item px-4 py-3" id="toggle-sidebar">
+          <div class="flex items-center">
+            <i class="fas fa-chevron-left w-6"></i>
+            <span class="menu-text ml-4">Collapse Menu</span>
+          </div>
+        </div>
+        
+        <div class="menu-item px-4 py-3" id="logout-button">
+          <div class="flex items-center">
+            <i class="fas fa-sign-out-alt w-6"></i>
+            <span class="menu-text ml-4">Logout</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Navigation Bar -->
+      <div class="flex items-center justify-between bg-white p-4 shadow-sm">
+        <div class="flex items-center">
+          <button class="mr-2 rounded-full p-2 hover:bg-gray-100" id="menu-button">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="text-xl font-semibold" id="page-title">Dashboard</h1>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <button class="rounded-full p-2 hover:bg-gray-100" id="notifications-button">
+              <i class="fas fa-bell"></i>
+              <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">3</span>
+            </button>
+          </div>
+          
+          <div class="flex items-center">
+            <div class="mr-2 h-8 w-8 overflow-hidden rounded-full bg-blue-500">
+              <img src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" alt="User Avatar">
+            </div>
+            <div>
+              <p class="text-sm font-medium" id="user-name">Dr. Sarah Johnson</p>
+              <p class="text-xs text-gray-500" id="user-role">Doctor</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Page Content Container -->
+      <div class="p-6">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page-content">
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <!-- Stat Cards -->
+            <div class="card bg-white p-6">
+              <div class="flex items-center">
+                <div class="mr-4 rounded-full bg-blue-100 p-3 text-blue-600">
+                  <i class="fas fa-user-injured text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">Today's Patients</p>
+                  <h3 class="text-2xl font-bold">24</h3>
+                </div>
+              </div>
+              <div class="mt-4 text-sm text-green-500">
+                <i class="fas fa-arrow-up"></i> 12% from yesterday
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center">
+                <div class="mr-4 rounded-full bg-green-100 p-3 text-green-600">
+                  <i class="fas fa-calendar-check text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">Appointments Today</p>
+                  <h3 class="text-2xl font-bold">18</h3>
+                </div>
+              </div>
+              <div class="mt-4 text-sm text-red-500">
+                <i class="fas fa-arrow-down"></i> 3% from yesterday
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center">
+                <div class="mr-4 rounded-full bg-yellow-100 p-3 text-yellow-600">
+                  <i class="fas fa-pills text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">Low Stock Items</p>
+                  <h3 class="text-2xl font-bold">7</h3>
+                </div>
+              </div>
+              <div class="mt-4 text-sm text-yellow-500">
+                <i class="fas fa-exclamation-triangle"></i> Requires attention
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center">
+                <div class="mr-4 rounded-full bg-purple-100 p-3 text-purple-600">
+                  <i class="fas fa-flask text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">Lab Tests Today</p>
+                  <h3 class="text-2xl font-bold">12</h3>
+                </div>
+              </div>
+              <div class="mt-4 text-sm text-green-500">
+                <i class="fas fa-arrow-up"></i> 8% from yesterday
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <!-- Recent Patients -->
+            <div class="card col-span-1 bg-white p-6">
+              <h3 class="mb-4 font-semibold">Recent Patients</h3>
+              <div class="divide-y">
+                <div class="flex items-center py-3">
+                  <div class="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
+                    <img src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" alt="Patient">
+                  </div>
+                  <div class="ml-3">
+                    <p class="font-medium">John Smith</p>
+                    <p class="text-sm text-gray-500">Check-up - 10:30 AM</p>
+                  </div>
+                  <div class="ml-auto">
+                    <span class="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">In Progress</span>
+                  </div>
+                </div>
+                
+                <div class="flex items-center py-3">
+                  <div class="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
+                    <img src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" alt="Patient">
+                  </div>
+                  <div class="ml-3">
+                    <p class="font-medium">Mary Johnson</p>
+                    <p class="text-sm text-gray-500">Follow-up - 11:00 AM</p>
+                  </div>
+                  <div class="ml-auto">
+                    <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Completed</span>
+                  </div>
+                </div>
+                
+                <div class="flex items-center py-3">
+                  <div class="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
+                    <img src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" alt="Patient">
+                  </div>
+                  <div class="ml-3">
+                    <p class="font-medium">Robert Davis</p>
+                    <p class="text-sm text-gray-500">X-Ray - 11:45 AM</p>
+                  </div>
+                  <div class="ml-auto">
+                    <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Waiting</span>
+                  </div>
+                </div>
+                
+                <div class="flex items-center py-3">
+                  <div class="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
+                    <img src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" alt="Patient">
+                  </div>
+                  <div class="ml-3">
+                    <p class="font-medium">Patricia Miller</p>
+                    <p class="text-sm text-gray-500">Blood Test - 12:15 PM</p>
+                  </div>
+                  <div class="ml-auto">
+                    <span class="rounded-full bg-purple-100 px-2 py-1 text-xs text-purple-800">Scheduled</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 text-center">
+                <a href="javascript:void(0)" class="text-sm text-blue-600 hover:underline">View All Patients</a>
+              </div>
+            </div>
+            
+            <!-- Revenue Chart -->
+            <div class="card col-span-2 bg-white p-6">
+              <h3 class="mb-4 font-semibold">Revenue Overview</h3>
+              <div class="h-64">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <!-- Upcoming Appointments -->
+            <div class="card bg-white p-6">
+              <div class="mb-4 flex items-center justify-between">
+                <h3 class="font-semibold">Upcoming Appointments</h3>
+                <div>
+                  <button class="btn rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">
+                    <i class="fas fa-plus mr-1"></i> New Appointment
+                  </button>
+                </div>
+              </div>
+              
+              <div class="overflow-x-auto">
+                <table class="min-w-full">
+                  <thead>
+                    <tr class="border-b text-left text-sm font-medium text-gray-500">
+                      <th class="pb-3">Patient</th>
+                      <th class="pb-3">Doctor</th>
+                      <th class="pb-3">Date</th>
+                      <th class="pb-3">Time</th>
+                      <th class="pb-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b">
+                      <td class="py-3">John Smith</td>
+                      <td class="py-3">Dr. Sarah Johnson</td>
+                      <td class="py-3">Jun 15, 2025</td>
+                      <td class="py-3">10:30 AM</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Confirmed</span>
+                      </td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="py-3">Mary Johnson</td>
+                      <td class="py-3">Dr. Michael Brown</td>
+                      <td class="py-3">Jun 15, 2025</td>
+                      <td class="py-3">11:00 AM</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">Pending</span>
+                      </td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="py-3">Robert Davis</td>
+                      <td class="py-3">Dr. Emily Wilson</td>
+                      <td class="py-3">Jun 15, 2025</td>
+                      <td class="py-3">11:45 AM</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Confirmed</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-3">Patricia Miller</td>
+                      <td class="py-3">Dr. Sarah Johnson</td>
+                      <td class="py-3">Jun 15, 2025</td>
+                      <td class="py-3">12:15 PM</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Rescheduled</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mt-4 text-center">
+                <a href="javascript:void(0)" class="text-sm text-blue-600 hover:underline">View All Appointments</a>
+              </div>
+            </div>
+            
+            <!-- Inventory Alerts -->
+            <div class="card bg-white p-6">
+              <div class="mb-4 flex items-center justify-between">
+                <h3 class="font-semibold">Inventory Alerts</h3>
+                <div>
+                  <button class="btn rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">
+                    <i class="fas fa-sync-alt mr-1"></i> Refresh
+                  </button>
+                </div>
+              </div>
+              
+              <div class="overflow-x-auto">
+                <table class="min-w-full">
+                  <thead>
+                    <tr class="border-b text-left text-sm font-medium text-gray-500">
+                      <th class="pb-3">Item</th>
+                      <th class="pb-3">Category</th>
+                      <th class="pb-3">Quantity</th>
+                      <th class="pb-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b low-stock">
+                      <td class="py-3">Amoxicillin 500mg</td>
+                      <td class="py-3">Antibiotics</td>
+                      <td class="py-3">5 boxes</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">Critical</span>
+                      </td>
+                    </tr>
+                    <tr class="border-b low-stock">
+                      <td class="py-3">Ibuprofen 200mg</td>
+                      <td class="py-3">Pain Relief</td>
+                      <td class="py-3">8 boxes</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Low</span>
+                      </td>
+                    </tr>
+                    <tr class="border-b low-stock">
+                      <td class="py-3">Disposable Gloves</td>
+                      <td class="py-3">Supplies</td>
+                      <td class="py-3">3 boxes</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">Critical</span>
+                      </td>
+                    </tr>
+                    <tr class="low-stock">
+                      <td class="py-3">Surgical Masks</td>
+                      <td class="py-3">Supplies</td>
+                      <td class="py-3">10 boxes</td>
+                      <td class="py-3">
+                        <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Low</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mt-4 text-center">
+                <a href="javascript:void(0)" class="text-sm text-blue-600 hover:underline">View All Inventory</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Patient Management Page -->
+        <div id="patients-page" class="page-content hidden">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Patient Management</h2>
+            <button id="add-patient-btn" class="btn rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <i class="fas fa-plus mr-2"></i> Add New Patient
+            </button>
+          </div>
+          
+          <div class="card mb-6 bg-white p-6">
+            <div class="flex flex-wrap items-center">
+              <div class="mb-4 w-full md:mb-0 md:w-1/3">
+                <label class="mb-1 block text-sm font-medium" for="patient-search">Search Patients</label>
+                <input id="patient-search" type="text" placeholder="Search by name, ID, or phone" class="form-input w-full">
+              </div>
+              
+              <div class="mb-4 ml-0 w-full md:mb-0 md:ml-4 md:w-1/4">
+                <label class="mb-1 block text-sm font-medium" for="filter-gender">Gender</label>
+                <select id="filter-gender" class="form-input w-full">
+                  <option value="">All</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div class="mb-4 ml-0 w-full md:mb-0 md:ml-4 md:w-1/4">
+                <label class="mb-1 block text-sm font-medium" for="filter-status">Status</label>
+                <select id="filter-status" class="form-input w-full">
+                  <option value="">All</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+              
+              <div class="mt-4 w-full md:mt-6 md:w-auto md:pl-4">
+                <button class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+                  <i class="fas fa-filter mr-2"></i> Filter
+                </button>
+                <button class="btn ml-2 rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+                  <i class="fas fa-sync-alt mr-2"></i> Reset
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card bg-white p-6">
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="border-b text-left text-sm font-medium text-gray-500">
+                    <th class="pb-3 pr-6">ID</th>
+                    <th class="pb-3 pr-6">Name</th>
+                    <th class="pb-3 pr-6">Gender</th>
+                    <th class="pb-3 pr-6">Date of Birth</th>
+                    <th class="pb-3 pr-6">Contact</th>
+                    <th class="pb-3 pr-6">Last Visit</th>
+                    <th class="pb-3 pr-6">Status</th>
+                    <th class="pb-3 pr-6">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">P-001</td>
+                    <td class="py-3 pr-6">John Smith</td>
+                    <td class="py-3 pr-6">Male</td>
+                    <td class="py-3 pr-6">15 Mar 1985</td>
+                    <td class="py-3 pr-6">+1 234-567-8901</td>
+                    <td class="py-3 pr-6">12 Jun 2025</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Active</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800" data-patient-id="P-001">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800" data-patient-id="P-001">
+                        <i class="fas fa-file-medical"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800" data-patient-id="P-001">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">P-002</td>
+                    <td class="py-3 pr-6">Mary Johnson</td>
+                    <td class="py-3 pr-6">Female</td>
+                    <td class="py-3 pr-6">22 Apr 1990</td>
+                    <td class="py-3 pr-6">+1 234-567-8902</td>
+                    <td class="py-3 pr-6">10 Jun 2025</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Active</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800" data-patient-id="P-002">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800" data-patient-id="P-002">
+                        <i class="fas fa-file-medical"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800" data-patient-id="P-002">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">P-003</td>
+                    <td class="py-3 pr-6">Robert Davis</td>
+                    <td class="py-3 pr-6">Male</td>
+                    <td class="py-3 pr-6">10 Jul 1975</td>
+                    <td class="py-3 pr-6">+1 234-567-8903</td>
+                    <td class="py-3 pr-6">05 Jun 2025</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Active</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800" data-patient-id="P-003">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800" data-patient-id="P-003">
+                        <i class="fas fa-file-medical"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800" data-patient-id="P-003">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="py-3 pr-6">P-004</td>
+                    <td class="py-3 pr-6">Patricia Miller</td>
+                    <td class="py-3 pr-6">Female</td>
+                    <td class="py-3 pr-6">28 Nov 1982</td>
+                    <td class="py-3 pr-6">+1 234-567-8904</td>
+                    <td class="py-3 pr-6">02 Jun 2025</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">Inactive</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800" data-patient-id="P-004">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800" data-patient-id="P-004">
+                        <i class="fas fa-file-medical"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800" data-patient-id="P-004">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="mt-6 flex items-center justify-between">
+              <div class="text-sm text-gray-500">
+                Showing 1 to 4 of 24 entries
+              </div>
+              <div class="flex">
+                <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm disabled:opacity-50">
+                  Previous
+                </button>
+                <button class="mr-2 rounded border border-blue-600 bg-blue-600 px-3 py-1 text-sm text-white">
+                  1
+                </button>
+                <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                  2
+                </button>
+                <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                  3
+                </button>
+                <button class="rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Appointments Page -->
+        <div id="appointments-page" class="page-content hidden">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Appointment Scheduling</h2>
+            <button id="add-appointment-btn" class="btn rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <i class="fas fa-plus mr-2"></i> New Appointment
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="lg:col-span-2">
+              <div class="card bg-white p-6">
+                <div id="appointment-calendar"></div>
+              </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+              <div class="card bg-white p-6">
+                <h3 class="mb-4 font-semibold">Today's Schedule</h3>
+                
+                <div class="space-y-4">
+                  <div class="rounded border-l-4 border-blue-600 bg-blue-50 p-3">
+                    <div class="flex items-center justify-between">
+                      <p class="font-medium">John Smith</p>
+                      <span class="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">Pending</span>
+                    </div>
+                    <p class="text-sm text-gray-600">10:30 AM - Dr. Sarah Johnson</p>
+                    <p class="text-sm text-gray-600">General Check-up</p>
+                  </div>
+                  
+                  <div class="rounded border-l-4 border-green-600 bg-green-50 p-3">
+                    <div class="flex items-center justify-between">
+                      <p class="font-medium">Mary Johnson</p>
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Confirmed</span>
+                    </div>
+                    <p class="text-sm text-gray-600">11:00 AM - Dr. Michael Brown</p>
+                    <p class="text-sm text-gray-600">Follow-up</p>
+                  </div>
+                  
+                  <div class="rounded border-l-4 border-green-600 bg-green-50 p-3">
+                    <div class="flex items-center justify-between">
+                      <p class="font-medium">Robert Davis</p>
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Confirmed</span>
+                    </div>
+                    <p class="text-sm text-gray-600">11:45 AM - Dr. Emily Wilson</p>
+                    <p class="text-sm text-gray-600">X-Ray Results</p>
+                  </div>
+                  
+                  <div class="rounded border-l-4 border-yellow-600 bg-yellow-50 p-3">
+                    <div class="flex items-center justify-between">
+                      <p class="font-medium">Patricia Miller</p>
+                      <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Rescheduled</span>
+                    </div>
+                    <p class="text-sm text-gray-600">12:15 PM - Dr. Sarah Johnson</p>
+                    <p class="text-sm text-gray-600">Blood Test Results</p>
+                  </div>
+                </div>
+                
+                <div class="mt-6 border-t pt-4">
+                  <h4 class="mb-2 font-medium">Appointment Legend</h4>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                      <span class="mr-2 inline-block h-3 w-3 rounded-full bg-blue-600"></span>
+                      <span>New Appointment</span>
+                    </div>
+                    <div class="flex items-center">
+                      <span class="mr-2 inline-block h-3 w-3 rounded-full bg-green-600"></span>
+                      <span>Confirmed</span>
+                    </div>
+                    <div class="flex items-center">
+                      <span class="mr-2 inline-block h-3 w-3 rounded-full bg-yellow-600"></span>
+                      <span>Rescheduled</span>
+                    </div>
+                    <div class="flex items-center">
+                      <span class="mr-2 inline-block h-3 w-3 rounded-full bg-red-600"></span>
+                      <span>Cancelled</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card mt-6 bg-white p-6">
+            <h3 class="mb-4 font-semibold">All Appointments</h3>
+            
+            <div class="mb-4 flex flex-wrap items-center">
+              <div class="mb-4 w-full md:mb-0 md:w-1/4">
+                <label class="mb-1 block text-sm font-medium" for="app-filter-doctor">Doctor</label>
+                <select id="app-filter-doctor" class="form-input w-full">
+                  <option value="">All Doctors</option>
+                  <option value="1">Dr. Sarah Johnson</option>
+                  <option value="2">Dr. Michael Brown</option>
+                  <option value="3">Dr. Emily Wilson</option>
+                </select>
+              </div>
+              
+              <div class="mb-4 ml-0 w-full md:mb-0 md:ml-4 md:w-1/4">
+                <label class="mb-1 block text-sm font-medium" for="app-filter-status">Status</label>
+                <select id="app-filter-status" class="form-input w-full">
+                  <option value="">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="rescheduled">Rescheduled</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+              
+              <div class="mb-4 ml-0 w-full md:mb-0 md:ml-4 md:w-1/4">
+                <label class="mb-1 block text-sm font-medium" for="app-filter-date">Date</label>
+                <input id="app-filter-date" type="date" class="form-input w-full">
+              </div>
+              
+              <div class="mt-4 w-full md:mt-6 md:w-auto md:pl-4">
+                <button class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+                  <i class="fas fa-filter mr-2"></i> Filter
+                </button>
+                <button class="btn ml-2 rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+                  <i class="fas fa-sync-alt mr-2"></i> Reset
+                </button>
+              </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="border-b text-left text-sm font-medium text-gray-500">
+                    <th class="pb-3 pr-6">ID</th>
+                    <th class="pb-3 pr-6">Patient</th>
+                    <th class="pb-3 pr-6">Doctor</th>
+                    <th class="pb-3 pr-6">Department</th>
+                    <th class="pb-3 pr-6">Date</th>
+                    <th class="pb-3 pr-6">Time</th>
+                    <th class="pb-3 pr-6">Status</th>
+                    <th class="pb-3 pr-6">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">A-001</td>
+                    <td class="py-3 pr-6">John Smith</td>
+                    <td class="py-3 pr-6">Dr. Sarah Johnson</td>
+                    <td class="py-3 pr-6">General Medicine</td>
+                    <td class="py-3 pr-6">Jun 15, 2025</td>
+                    <td class="py-3 pr-6">10:30 AM</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">Pending</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-check"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">A-002</td>
+                    <td class="py-3 pr-6">Mary Johnson</td>
+                    <td class="py-3 pr-6">Dr. Michael Brown</td>
+                    <td class="py-3 pr-6">Orthopedics</td>
+                    <td class="py-3 pr-6">Jun 15, 2025</td>
+                    <td class="py-3 pr-6">11:00 AM</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Confirmed</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-yellow-600 hover:text-yellow-800">
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">A-003</td>
+                    <td class="py-3 pr-6">Robert Davis</td>
+                    <td class="py-3 pr-6">Dr. Emily Wilson</td>
+                    <td class="py-3 pr-6">Radiology</td>
+                    <td class="py-3 pr-6">Jun 15, 2025</td>
+                    <td class="py-3 pr-6">11:45 AM</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Confirmed</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-yellow-600 hover:text-yellow-800">
+                        <i class="fas fa-calendar-alt"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="py-3 pr-6">A-004</td>
+                    <td class="py-3 pr-6">Patricia Miller</td>
+                    <td class="py-3 pr-6">Dr. Sarah Johnson</td>
+                    <td class="py-3 pr-6">General Medicine</td>
+                    <td class="py-3 pr-6">Jun 15, 2025</td>
+                    <td class="py-3 pr-6">12:15 PM</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Rescheduled</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-check"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Staff Management Page -->
+        <div id="staff-page" class="page-content hidden">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Staff Management</h2>
+            <button id="add-staff-btn" class="btn rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <i class="fas fa-plus mr-2"></i> Add New Staff
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="lg:col-span-2">
+              <div class="card bg-white p-6">
+                <div class="mb-4 flex flex-wrap items-center">
+                  <div class="mb-4 w-full md:mb-0 md:w-1/3">
+                    <label class="mb-1 block text-sm font-medium" for="staff-search">Search Staff</label>
+                    <input id="staff-search" type="text" placeholder="Search by name or role" class="form-input w-full">
+                  </div>
+                  
+                  <div class="mb-4 ml-0 w-full md:mb-0 md:ml-4 md:w-1/4">
+                    <label class="mb-1 block text-sm font-medium" for="filter-role">Role</label>
+                    <select id="filter-role" class="form-input w-full">
+                      <option value="">All Roles</option>
+                      <option value="doctor">Doctor</option>
+                      <option value="nurse">Nurse</option>
+                      <option value="receptionist">Receptionist</option>
+                      <option value="pharmacist">Pharmacist</option>
+                      <option value="lab_technician">Lab Technician</option>
+                    </select>
+                  </div>
+                  
+                  <div class="mb-4 ml-0 w-full md:mb-0 md:ml-4 md:w-1/4">
+                    <label class="mb-1 block text-sm font-medium" for="filter-department">Department</label>
+                    <select id="filter-department" class="form-input w-full">
+                      <option value="">All Departments</option>
+                      <option value="general_medicine">General Medicine</option>
+                      <option value="orthopedics">Orthopedics</option>
+                      <option value="cardiology">Cardiology</option>
+                      <option value="neurology">Neurology</option>
+                      <option value="pediatrics">Pediatrics</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                  <table class="min-w-full">
+                    <thead>
+                      <tr class="border-b text-left text-sm font-medium text-gray-500">
+                        <th class="pb-3 pr-6">ID</th>
+                        <th class="pb-3 pr-6">Name</th>
+                        <th class="pb-3 pr-6">Role</th>
+                        <th class="pb-3 pr-6">Department</th>
+                        <th class="pb-3 pr-6">Contact</th>
+                        <th class="pb-3 pr-6">Status</th>
+                        <th class="pb-3 pr-6">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 pr-6">S-001</td>
+                        <td class="py-3 pr-6">Dr. Sarah Johnson</td>
+                        <td class="py-3 pr-6">Doctor</td>
+                        <td class="py-3 pr-6">General Medicine</td>
+                        <td class="py-3 pr-6">+1 234-567-8910</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Active</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="mr-2 text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-calendar-week"></i>
+                          </button>
+                          <button class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 pr-6">S-002</td>
+                        <td class="py-3 pr-6">Dr. Michael Brown</td>
+                        <td class="py-3 pr-6">Doctor</td>
+                        <td class="py-3 pr-6">Orthopedics</td>
+                        <td class="py-3 pr-6">+1 234-567-8911</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Active</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="mr-2 text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-calendar-week"></i>
+                          </button>
+                          <button class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 pr-6">S-003</td>
+                        <td class="py-3 pr-6">Jane Wilson</td>
+                        <td class="py-3 pr-6">Receptionist</td>
+                        <td class="py-3 pr-6">Front Desk</td>
+                        <td class="py-3 pr-6">+1 234-567-8912</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Active</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="mr-2 text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-calendar-week"></i>
+                          </button>
+                          <button class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="hover:bg-gray-50">
+                        <td class="py-3 pr-6">S-004</td>
+                        <td class="py-3 pr-6">David Lee</td>
+                        <td class="py-3 pr-6">Pharmacist</td>
+                        <td class="py-3 pr-6">Pharmacy</td>
+                        <td class="py-3 pr-6">+1 234-567-8913</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">Inactive</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="mr-2 text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-calendar-week"></i>
+                          </button>
+                          <button class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div class="mt-6 flex items-center justify-between">
+                  <div class="text-sm text-gray-500">
+                    Showing 1 to 4 of 12 entries
+                  </div>
+                  <div class="flex">
+                    <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm disabled:opacity-50">
+                      Previous
+                    </button>
+                    <button class="mr-2 rounded border border-blue-600 bg-blue-600 px-3 py-1 text-sm text-white">
+                      1
+                    </button>
+                    <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                      2
+                    </button>
+                    <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                      3
+                    </button>
+                    <button class="rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+              <div class="card bg-white p-6">
+                <h3 class="mb-4 font-semibold">Department Summary</h3>
+                
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between rounded border border-gray-200 p-3">
+                    <div>
+                      <p class="font-medium">General Medicine</p>
+                      <p class="text-sm text-gray-500">5 Staff Members</p>
+                    </div>
+                    <div class="text-blue-600">
+                      <i class="fas fa-chevron-right"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center justify-between rounded border border-gray-200 p-3">
+                    <div>
+                      <p class="font-medium">Orthopedics</p>
+                      <p class="text-sm text-gray-500">3 Staff Members</p>
+                    </div>
+                    <div class="text-blue-600">
+                      <i class="fas fa-chevron-right"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center justify-between rounded border border-gray-200 p-3">
+                    <div>
+                      <p class="font-medium">Cardiology</p>
+                      <p class="text-sm text-gray-500">4 Staff Members</p>
+                    </div>
+                    <div class="text-blue-600">
+                      <i class="fas fa-chevron-right"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center justify-between rounded border border-gray-200 p-3">
+                    <div>
+                      <p class="font-medium">Neurology</p>
+                      <p class="text-sm text-gray-500">2 Staff Members</p>
+                    </div>
+                    <div class="text-blue-600">
+                      <i class="fas fa-chevron-right"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center justify-between rounded border border-gray-200 p-3">
+                    <div>
+                      <p class="font-medium">Pediatrics</p>
+                      <p class="text-sm text-gray-500">3 Staff Members</p>
+                    </div>
+                    <div class="text-blue-600">
+                      <i class="fas fa-chevron-right"></i>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-6">
+                  <button id="add-department-btn" class="btn w-full rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+                    <i class="fas fa-plus mr-2"></i> Add Department
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Billing Page -->
+        <div id="billing-page" class="page-content hidden">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Billing & Payments</h2>
+            <button id="add-invoice-btn" class="btn rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <i class="fas fa-plus mr-2"></i> New Invoice
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <!-- Summary Cards -->
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Total Revenue</p>
+                  <h3 class="text-2xl font-bold">$24,580</h3>
+                  <p class="text-sm text-green-500">+12% from last month</p>
+                </div>
+                <div class="rounded-full bg-blue-100 p-3 text-blue-600">
+                  <i class="fas fa-dollar-sign text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Pending Payments</p>
+                  <h3 class="text-2xl font-bold">$5,240</h3>
+                  <p class="text-sm text-red-500">8 invoices pending</p>
+                </div>
+                <div class="rounded-full bg-yellow-100 p-3 text-yellow-600">
+                  <i class="fas fa-hourglass-half text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Today's Revenue</p>
+                  <h3 class="text-2xl font-bold">$1,840</h3>
+                  <p class="text-sm text-green-500">12 payments received</p>
+                </div>
+                <div class="rounded-full bg-green-100 p-3 text-green-600">
+                  <i class="fas fa-calendar-day text-xl"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="card lg:col-span-2 bg-white p-6">
+              <div class="mb-4 flex items-center justify-between">
+                <h3 class="font-semibold">Recent Invoices</h3>
+                <div class="space-x-2">
+                  <button class="btn rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300">
+                    <i class="fas fa-file-export mr-1"></i> Export
+                  </button>
+                  <button class="btn rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300">
+                    <i class="fas fa-print mr-1"></i> Print
+                  </button>
+                </div>
+              </div>
+              
+              <div class="overflow-x-auto">
+                <table class="min-w-full">
+                  <thead>
+                    <tr class="border-b text-left text-sm font-medium text-gray-500">
+                      <th class="pb-3 pr-6">Invoice #</th>
+                      <th class="pb-3 pr-6">Patient</th>
+                      <th class="pb-3 pr-6">Date</th>
+                      <th class="pb-3 pr-6">Amount</th>
+                      <th class="pb-3 pr-6">Status</th>
+                      <th class="pb-3 pr-6">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="py-3 pr-6">INV-001</td>
+                      <td class="py-3 pr-6">John Smith</td>
+                      <td class="py-3 pr-6">Jun 12, 2025</td>
+                      <td class="py-3 pr-6">$350.00</td>
+                      <td class="py-3 pr-6">
+                        <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Paid</span>
+                      </td>
+                      <td class="py-3 pr-6">
+                        <button class="mr-2 text-blue-600 hover:text-blue-800">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="mr-2 text-green-600 hover:text-green-800">
+                          <i class="fas fa-print"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="py-3 pr-6">INV-002</td>
+                      <td class="py-3 pr-6">Mary Johnson</td>
+                      <td class="py-3 pr-6">Jun 11, 2025</td>
+                      <td class="py-3 pr-6">$480.00</td>
+                      <td class="py-3 pr-6">
+                        <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Pending</span>
+                      </td>
+                      <td class="py-3 pr-6">
+                        <button class="mr-2 text-blue-600 hover:text-blue-800">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="mr-2 text-green-600 hover:text-green-800">
+                          <i class="fas fa-print"></i>
+                        </button>
+                        <button class="text-purple-600 hover:text-purple-800">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="py-3 pr-6">INV-003</td>
+                      <td class="py-3 pr-6">Robert Davis</td>
+                      <td class="py-3 pr-6">Jun 10, 2025</td>
+                      <td class="py-3 pr-6">$780.00</td>
+                      <td class="py-3 pr-6">
+                        <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Paid</span>
+                      </td>
+                      <td class="py-3 pr-6">
+                        <button class="mr-2 text-blue-600 hover:text-blue-800">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="mr-2 text-green-600 hover:text-green-800">
+                          <i class="fas fa-print"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 pr-6">INV-004</td>
+                      <td class="py-3 pr-6">Patricia Miller</td>
+                      <td class="py-3 pr-6">Jun 09, 2025</td>
+                      <td class="py-3 pr-6">$230.00</td>
+                      <td class="py-3 pr-6">
+                        <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Pending</span>
+                      </td>
+                      <td class="py-3 pr-6">
+                        <button class="mr-2 text-blue-600 hover:text-blue-800">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="mr-2 text-green-600 hover:text-green-800">
+                          <i class="fas fa-print"></i>
+                        </button>
+                        <button class="text-purple-600 hover:text-purple-800">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="mt-4 text-center">
+                <a href="javascript:void(0)" class="text-sm text-blue-600 hover:underline">View All Invoices</a>
+              </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+              <div class="card bg-white p-6">
+                <h3 class="mb-4 font-semibold">Payment Methods</h3>
+                
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                      <div class="mr-3 rounded bg-blue-100 p-2">
+                        <i class="fas fa-credit-card text-blue-600"></i>
+                      </div>
+                      <div>
+                        <p class="font-medium">Credit Card</p>
+                        <p class="text-sm text-gray-500">32 Payments</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="font-medium">$12,540</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                      <div class="mr-3 rounded bg-green-100 p-2">
+                        <i class="fas fa-money-bill-wave text-green-600"></i>
+                      </div>
+                      <div>
+                        <p class="font-medium">Cash</p>
+                        <p class="text-sm text-gray-500">24 Payments</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="font-medium">$8,380</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                      <div class="mr-3 rounded bg-purple-100 p-2">
+                        <i class="fas fa-mobile-alt text-purple-600"></i>
+                      </div>
+                      <div>
+                        <p class="font-medium">MPesa</p>
+                        <p class="text-sm text-gray-500">18 Payments</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="font-medium">$3,660</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                      <div class="mr-3 rounded bg-yellow-100 p-2">
+                        <i class="fas fa-building text-yellow-600"></i>
+                      </div>
+                      <div>
+                        <p class="font-medium">Insurance</p>
+                        <p class="text-sm text-gray-500">16 Payments</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="font-medium">$5,240</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-6 border-t pt-4">
+                  <div class="mb-3">
+                    <h4 class="font-medium">Payment Status</h4>
+                  </div>
+                  <div class="h-32">
+                    <canvas id="paymentChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pharmacy Page -->
+        <div id="pharmacy-page" class="page-content hidden">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Pharmacy Management</h2>
+            <div>
+              <button id="add-medicine-btn" class="btn rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Add Medicine
+              </button>
+              <button id="purchase-order-btn" class="btn ml-2 rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+                <i class="fas fa-file-medical mr-2"></i> Purchase Order
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <!-- Summary Cards -->
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Total Medicines</p>
+                  <h3 class="text-2xl font-bold">247</h3>
+                </div>
+                <div class="rounded-full bg-blue-100 p-3 text-blue-600">
+                  <i class="fas fa-pills text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Low Stock Items</p>
+                  <h3 class="text-2xl font-bold">12</h3>
+                </div>
+                <div class="rounded-full bg-red-100 p-3 text-red-600">
+                  <i class="fas fa-exclamation-triangle text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Expiring Soon</p>
+                  <h3 class="text-2xl font-bold">8</h3>
+                </div>
+                <div class="rounded-full bg-yellow-100 p-3 text-yellow-600">
+                  <i class="fas fa-calendar-times text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Out of Stock</p>
+                  <h3 class="text-2xl font-bold">3</h3>
+                </div>
+                <div class="rounded-full bg-gray-100 p-3 text-gray-600">
+                  <i class="fas fa-box-open text-xl"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card mt-6 bg-white p-6">
+            <div class="mb-4 flex items-center justify-between">
+              <h3 class="font-semibold">Medicine Inventory</h3>
+              <div class="space-x-2">
+                <button class="btn rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300">
+                  <i class="fas fa-file-export mr-1"></i> Export
+                </button>
+                <button class="btn rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300">
+                  <i class="fas fa-print mr-1"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-4 flex flex-wrap">
+              <div class="mb-4 mr-4 w-full sm:w-64">
+                <input type="text" placeholder="Search medicines..." class="form-input w-full">
+              </div>
+              <div class="mb-4 mr-4 w-full sm:w-48">
+                <select class="form-input w-full">
+                  <option value="">All Categories</option>
+                  <option value="antibiotics">Antibiotics</option>
+                  <option value="painkillers">Painkillers</option>
+                  <option value="antacids">Antacids</option>
+                  <option value="vitamins">Vitamins</option>
+                </select>
+              </div>
+              <div class="mb-4 w-full sm:w-48">
+                <select class="form-input w-full">
+                  <option value="">All Status</option>
+                  <option value="in_stock">In Stock</option>
+                  <option value="low_stock">Low Stock</option>
+                  <option value="out_of_stock">Out of Stock</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="border-b text-left text-sm font-medium text-gray-500">
+                    <th class="pb-3 pr-6">ID</th>
+                    <th class="pb-3 pr-6">Name</th>
+                    <th class="pb-3 pr-6">Category</th>
+                    <th class="pb-3 pr-6">Stock</th>
+                    <th class="pb-3 pr-6">Unit Price</th>
+                    <th class="pb-3 pr-6">Expiry Date</th>
+                    <th class="pb-3 pr-6">Status</th>
+                    <th class="pb-3 pr-6">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">M-001</td>
+                    <td class="py-3 pr-6">Amoxicillin 500mg</td>
+                    <td class="py-3 pr-6">Antibiotics</td>
+                    <td class="py-3 pr-6">5 boxes</td>
+                    <td class="py-3 pr-6">$12.50</td>
+                    <td class="py-3 pr-6">Dec 15, 2025</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">Low Stock</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-plus-circle"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">M-002</td>
+                    <td class="py-3 pr-6">Ibuprofen 200mg</td>
+                    <td class="py-3 pr-6">Painkillers</td>
+                    <td class="py-3 pr-6">8 boxes</td>
+                    <td class="py-3 pr-6">$8.75</td>
+                    <td class="py-3 pr-6">Feb 28, 2026</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Low Stock</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-plus-circle"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">M-003</td>
+                    <td class="py-3 pr-6">Omeprazole 20mg</td>
+                    <td class="py-3 pr-6">Antacids</td>
+                    <td class="py-3 pr-6">15 boxes</td>
+                    <td class="py-3 pr-6">$10.25</td>
+                    <td class="py-3 pr-6">May 10, 2026</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">In Stock</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-plus-circle"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">M-004</td>
+                    <td class="py-3 pr-6">Paracetamol 500mg</td>
+                    <td class="py-3 pr-6">Painkillers</td>
+                    <td class="py-3 pr-6">20 boxes</td>
+                    <td class="py-3 pr-6">$5.50</td>
+                    <td class="py-3 pr-6">Aug 22, 2026</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">In Stock</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-plus-circle"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="py-3 pr-6">M-005</td>
+                    <td class="py-3 pr-6">Vitamin C 500mg</td>
+                    <td class="py-3 pr-6">Vitamins</td>
+                    <td class="py-3 pr-6">0 boxes</td>
+                    <td class="py-3 pr-6">$7.25</td>
+                    <td class="py-3 pr-6">N/A</td>
+                    <td class="py-3 pr-6">
+                      <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">Out of Stock</span>
+                    </td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-plus-circle"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="mt-6 flex items-center justify-between">
+              <div class="text-sm text-gray-500">
+                Showing 1 to 5 of 247 entries
+              </div>
+              <div class="flex">
+                <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm disabled:opacity-50">
+                  Previous
+                </button>
+                <button class="mr-2 rounded border border-blue-600 bg-blue-600 px-3 py-1 text-sm text-white">
+                  1
+                </button>
+                <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                  2
+                </button>
+                <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                  3
+                </button>
+                <button class="rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div class="card bg-white p-6">
+              <h3 class="mb-4 font-semibold">Recent Prescriptions</h3>
+              
+              <div class="space-y-4">
+                <div class="rounded border border-gray-200 p-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <p class="font-medium">Prescription #P-235</p>
+                    <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Completed</span>
+                  </div>
+                  <p class="text-sm text-gray-600">Patient: John Smith</p>
+                  <p class="text-sm text-gray-600">Doctor: Dr. Sarah Johnson</p>
+                  <p class="text-sm text-gray-600">Date: Jun 12, 2025</p>
+                  <div class="mt-2 border-t pt-2">
+                    <p class="text-sm"><span class="font-medium">Medications:</span> Amoxicillin 500mg (1-0-1), Ibuprofen 200mg (1-1-1)</p>
+                  </div>
+                </div>
+                
+                <div class="rounded border border-gray-200 p-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <p class="font-medium">Prescription #P-234</p>
+                    <span class="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">In Progress</span>
+                  </div>
+                  <p class="text-sm text-gray-600">Patient: Mary Johnson</p>
+                  <p class="text-sm text-gray-600">Doctor: Dr. Michael Brown</p>
+                  <p class="text-sm text-gray-600">Date: Jun 12, 2025</p>
+                  <div class="mt-2 border-t pt-2">
+                    <p class="text-sm"><span class="font-medium">Medications:</span> Omeprazole 20mg (0-1-0), Paracetamol 500mg (1-1-1)</p>
+                  </div>
+                </div>
+                
+                <div class="rounded border border-gray-200 p-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <p class="font-medium">Prescription #P-233</p>
+                    <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Completed</span>
+                  </div>
+                  <p class="text-sm text-gray-600">Patient: Robert Davis</p>
+                  <p class="text-sm text-gray-600">Doctor: Dr. Emily Wilson</p>
+                  <p class="text-sm text-gray-600">Date: Jun 11, 2025</p>
+                  <div class="mt-2 border-t pt-2">
+                    <p class="text-sm"><span class="font-medium">Medications:</span> Amoxicillin 500mg (1-0-1), Paracetamol 500mg (1-1-1)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <h3 class="mb-4 font-semibold">Inventory Statistics</h3>
+              
+              <div class="h-64 mb-4">
+                <canvas id="inventoryChart"></canvas>
+              </div>
+              
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="rounded border border-gray-200 p-3">
+                  <p class="text-sm text-gray-500">Most Prescribed</p>
+                  <p class="font-medium">Paracetamol 500mg</p>
+                  <p class="text-sm text-gray-500">142 prescriptions</p>
+                </div>
+                
+                <div class="rounded border border-gray-200 p-3">
+                  <p class="text-sm text-gray-500">Most Profitable</p>
+                  <p class="font-medium">Amoxicillin 500mg</p>
+                  <p class="text-sm text-gray-500">$3,840 revenue</p>
+                </div>
+                
+                <div class="rounded border border-gray-200 p-3">
+                  <p class="text-sm text-gray-500">Expiring Soon</p>
+                  <p class="font-medium">8 medications</p>
+                  <p class="text-sm text-gray-500">Within 3 months</p>
+                </div>
+                
+                <div class="rounded border border-gray-200 p-3">
+                  <p class="text-sm text-gray-500">Total Value</p>
+                  <p class="font-medium">$28,650</p>
+                  <p class="text-sm text-gray-500">Current inventory</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Laboratory Page -->
+        <div id="laboratory-page" class="page-content hidden">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Laboratory Management</h2>
+            <div>
+              <button id="add-test-btn" class="btn rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Add Test Result
+              </button>
+              <button id="print-results-btn" class="btn ml-2 rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+                <i class="fas fa-print mr-2"></i> Print Results
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <!-- Summary Cards -->
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Total Tests</p>
+                  <h3 class="text-2xl font-bold">154</h3>
+                  <p class="text-sm text-gray-500">This month</p>
+                </div>
+                <div class="rounded-full bg-blue-100 p-3 text-blue-600">
+                  <i class="fas fa-flask text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Pending Tests</p>
+                  <h3 class="text-2xl font-bold">18</h3>
+                  <p class="text-sm text-red-500">Needs attention</p>
+                </div>
+                <div class="rounded-full bg-yellow-100 p-3 text-yellow-600">
+                  <i class="fas fa-hourglass-half text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Tests Today</p>
+                  <h3 class="text-2xl font-bold">12</h3>
+                  <p class="text-sm text-green-500">4 completed</p>
+                </div>
+                <div class="rounded-full bg-green-100 p-3 text-green-600">
+                  <i class="fas fa-calendar-day text-xl"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500">Abnormal Results</p>
+                  <h3 class="text-2xl font-bold">7</h3>
+                  <p class="text-sm text-red-500">This week</p>
+                </div>
+                <div class="rounded-full bg-red-100 p-3 text-red-600">
+                  <i class="fas fa-exclamation-circle text-xl"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="lg:col-span-2">
+              <div class="card bg-white p-6">
+                <div class="mb-4 flex items-center justify-between">
+                  <h3 class="font-semibold">Recent Test Results</h3>
+                  <div>
+                    <input type="text" placeholder="Search tests..." class="form-input rounded">
+                  </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                  <table class="min-w-full">
+                    <thead>
+                      <tr class="border-b text-left text-sm font-medium text-gray-500">
+                        <th class="pb-3 pr-6">Test ID</th>
+                        <th class="pb-3 pr-6">Patient</th>
+                        <th class="pb-3 pr-6">Test Type</th>
+                        <th class="pb-3 pr-6">Date</th>
+                        <th class="pb-3 pr-6">Status</th>
+                        <th class="pb-3 pr-6">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 pr-6">T-001</td>
+                        <td class="py-3 pr-6">John Smith</td>
+                        <td class="py-3 pr-6">Blood Test</td>
+                        <td class="py-3 pr-6">Jun 12, 2025</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Completed</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="mr-2 text-green-600 hover:text-green-800">
+                            <i class="fas fa-print"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 pr-6">T-002</td>
+                        <td class="py-3 pr-6">Mary Johnson</td>
+                        <td class="py-3 pr-6">X-Ray</td>
+                        <td class="py-3 pr-6">Jun 12, 2025</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">In Process</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 pr-6">T-003</td>
+                        <td class="py-3 pr-6">Robert Davis</td>
+                        <td class="py-3 pr-6">Urine Test</td>
+                        <td class="py-3 pr-6">Jun 11, 2025</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Completed</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="mr-2 text-green-600 hover:text-green-800">
+                            <i class="fas fa-print"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="hover:bg-gray-50">
+                        <td class="py-3 pr-6">T-004</td>
+                        <td class="py-3 pr-6">Patricia Miller</td>
+                        <td class="py-3 pr-6">MRI Scan</td>
+                        <td class="py-3 pr-6">Jun 11, 2025</td>
+                        <td class="py-3 pr-6">
+                          <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Pending</span>
+                        </td>
+                        <td class="py-3 pr-6">
+                          <button class="mr-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div class="mt-6 flex items-center justify-between">
+                  <div class="text-sm text-gray-500">
+                    Showing 1 to 4 of 154 entries
+                  </div>
+                  <div class="flex">
+                    <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm disabled:opacity-50">
+                      Previous
+                    </button>
+                    <button class="mr-2 rounded border border-blue-600 bg-blue-600 px-3 py-1 text-sm text-white">
+                      1
+                    </button>
+                    <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                      2
+                    </button>
+                    <button class="mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                      3
+                    </button>
+                    <button class="rounded border border-gray-300 bg-white px-3 py-1 text-sm">
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+              <div class="card bg-white p-6">
+                <h3 class="mb-4 font-semibold">Test Categories</h3>
+                
+                <div class="h-48 mb-6">
+                  <canvas id="testCategoryChart"></canvas>
+                </div>
+                
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between rounded border p-3">
+                    <div class="flex items-center">
+                      <div class="mr-3 h-3 w-3 rounded-full bg-blue-500"></div>
+                      <p>Blood Tests</p>
+                    </div>
+                    <p class="font-medium">64</p>
+                  </div>
+                  
+                  <div class="flex items-center justify-between rounded border p-3">
+                    <div class="flex items-center">
+                      <div class="mr-3 h-3 w-3 rounded-full bg-green-500"></div>
+                      <p>Urine Tests</p>
+                    </div>
+                    <p class="font-medium">28</p>
+                  </div>
+                  
+                  <div class="flex items-center justify-between rounded border p-3">
+                    <div class="flex items-center">
+                      <div class="mr-3 h-3 w-3 rounded-full bg-yellow-500"></div>
+                      <p>X-Ray</p>
+                    </div>
+                    <p class="font-medium">42</p>
+                  </div>
+                  
+                  <div class="flex items-center justify-between rounded border p-3">
+                    <div class="flex items-center">
+                      <div class="mr-3 h-3 w-3 rounded-full bg-red-500"></div>
+                      <p>MRI Scan</p>
+                    </div>
+                    <p class="font-medium">20</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Reports Page -->
+        <div id="reports-page" class="page-content hidden">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Reports & Analytics</h2>
+            <div>
+              <button class="btn rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                <i class="fas fa-file-export mr-2"></i> Export Reports
+              </button>
+              <button class="btn ml-2 rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+                <i class="fas fa-print mr-2"></i> Print
+              </button>
+            </div>
+          </div>
+          
+          <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div class="card bg-white p-6">
+              <h3 class="mb-4 font-semibold">Generate Report</h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="mb-1 block text-sm font-medium">Report Type</label>
+                  <select class="form-input w-full">
+                    <option value="">Select Report Type</option>
+                    <option value="patient_visits">Patient Visits</option>
+                    <option value="revenue">Revenue Report</option>
+                    <option value="inventory">Inventory Status</option>
+                    <option value="doctor_performance">Doctor Performance</option>
+                    <option value="lab_tests">Laboratory Tests</option>
+                  </select>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label class="mb-1 block text-sm font-medium">Start Date</label>
+                    <input type="date" class="form-input w-full">
+                  </div>
+                  
+                  <div>
+                    <label class="mb-1 block text-sm font-medium">End Date</label>
+                    <input type="date" class="form-input w-full">
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="mb-1 block text-sm font-medium">Format</label>
+                  <div class="flex space-x-4">
+                    <label class="flex items-center">
+                      <input type="radio" name="format" class="mr-1" checked>
+                      <span>PDF</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="radio" name="format" class="mr-1">
+                      <span>Excel</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="radio" name="format" class="mr-1">
+                      <span>CSV</span>
+                    </label>
+                  </div>
+                </div>
+                
+                <button class="btn w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                  <i class="fas fa-file-alt mr-2"></i> Generate Report
+                </button>
+              </div>
+            </div>
+            
+            <div class="card md:col-span-2 bg-white p-6">
+              <h3 class="mb-4 font-semibold">Revenue Overview</h3>
+              
+              <div class="mb-4 flex flex-wrap items-center">
+                <div class="mb-4 mr-4 w-32 md:mb-0">
+                  <select class="form-input w-full text-sm">
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+                </div>
+                <div class="flex space-x-2">
+                  <label class="flex items-center">
+                    <input type="checkbox" class="mr-1" checked>
+                    <span class="text-sm">Consultations</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" class="mr-1" checked>
+                    <span class="text-sm">Pharmacy</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" class="mr-1" checked>
+                    <span class="text-sm">Laboratory</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="h-64">
+                <canvas id="revenueReportChart"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div class="card bg-white p-6">
+              <h3 class="mb-4 font-semibold">Patient Visit Statistics</h3>
+              
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div class="rounded border border-gray-200 p-3 text-center">
+                  <h4 class="text-3xl font-bold text-blue-600">1,248</h4>
+                  <p class="text-sm text-gray-500">Monthly Visits</p>
+                </div>
+                
+                <div class="rounded border border-gray-200 p-3 text-center">
+                  <h4 class="text-3xl font-bold text-green-600">42</h4>
+                  <p class="text-sm text-gray-500">Avg. Daily Visits</p>
+                </div>
+                
+                <div class="rounded border border-gray-200 p-3 text-center">
+                  <h4 class="text-3xl font-bold text-purple-600">18%</h4>
+                  <p class="text-sm text-gray-500">Monthly Growth</p>
+                </div>
+              </div>
+              
+              <div class="mt-6 h-64">
+                <canvas id="patientVisitChart"></canvas>
+              </div>
+            </div>
+            
+            <div class="card bg-white p-6">
+              <h3 class="mb-4 font-semibold">Doctor Performance</h3>
+              
+              <div class="mb-4">
+                <select class="form-input w-48">
+                  <option value="month">Last Month</option>
+                  <option value="quarter">Last Quarter</option>
+                  <option value="year">Last Year</option>
+                </select>
+              </div>
+              
+              <div class="overflow-x-auto">
+                <table class="min-w-full">
+                  <thead>
+                    <tr class="border-b text-left text-sm font-medium text-gray-500">
+                      <th class="pb-3 pr-6">Doctor</th>
+                      <th class="pb-3 pr-6">Department</th>
+                      <th class="pb-3 pr-6">Patients</th>
+                      <th class="pb-3 pr-6">Revenue</th>
+                      <th class="pb-3 pr-6">Rating</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="py-3 pr-6">Dr. Sarah Johnson</td>
+                      <td class="py-3 pr-6">General Medicine</td>
+                      <td class="py-3 pr-6">124</td>
+                      <td class="py-3 pr-6">$9,850</td>
+                      <td class="py-3 pr-6">
+                        <div class="flex text-yellow-400">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star-half-alt"></i>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="py-3 pr-6">Dr. Michael Brown</td>
+                      <td class="py-3 pr-6">Orthopedics</td>
+                      <td class="py-3 pr-6">98</td>
+                      <td class="py-3 pr-6">$12,460</td>
+                      <td class="py-3 pr-6">
+                        <div class="flex text-yellow-400">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="far fa-star"></i>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="py-3 pr-6">Dr. Emily Wilson</td>
+                      <td class="py-3 pr-6">Radiology</td>
+                      <td class="py-3 pr-6">76</td>
+                      <td class="py-3 pr-6">$8,720</td>
+                      <td class="py-3 pr-6">
+                        <div class="flex text-yellow-400">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="far fa-star"></i>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 pr-6">Dr. James Wilson</td>
+                      <td class="py-3 pr-6">Cardiology</td>
+                      <td class="py-3 pr-6">112</td>
+                      <td class="py-3 pr-6">$15,890</td>
+                      <td class="py-3 pr-6">
+                        <div class="flex text-yellow-400">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star-half-alt"></i>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card mt-6 bg-white p-6">
+            <h3 class="mb-4 font-semibold">Recent Reports</h3>
+            
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="border-b text-left text-sm font-medium text-gray-500">
+                    <th class="pb-3 pr-6">Report ID</th>
+                    <th class="pb-3 pr-6">Report Type</th>
+                    <th class="pb-3 pr-6">Generated By</th>
+                    <th class="pb-3 pr-6">Date Generated</th>
+                    <th class="pb-3 pr-6">Format</th>
+                    <th class="pb-3 pr-6">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">R-001</td>
+                    <td class="py-3 pr-6">Patient Visits</td>
+                    <td class="py-3 pr-6">Admin</td>
+                    <td class="py-3 pr-6">Jun 12, 2025</td>
+                    <td class="py-3 pr-6">PDF</td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-download"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">R-002</td>
+                    <td class="py-3 pr-6">Revenue Report</td>
+                    <td class="py-3 pr-6">Admin</td>
+                    <td class="py-3 pr-6">Jun 10, 2025</td>
+                    <td class="py-3 pr-6">Excel</td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-download"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 pr-6">R-003</td>
+                    <td class="py-3 pr-6">Inventory Status</td>
+                    <td class="py-3 pr-6">Pharmacist</td>
+                    <td class="py-3 pr-6">Jun 08, 2025</td>
+                    <td class="py-3 pr-6">PDF</td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-download"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="py-3 pr-6">R-004</td>
+                    <td class="py-3 pr-6">Doctor Performance</td>
+                    <td class="py-3 pr-6">Admin</td>
+                    <td class="py-3 pr-6">Jun 05, 2025</td>
+                    <td class="py-3 pr-6">CSV</td>
+                    <td class="py-3 pr-6">
+                      <button class="mr-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="mr-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-download"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Slide-in Panels -->
+  
+  <!-- Add Patient Panel -->
+  <div id="add-patient-panel" class="slide-in">
+    <div class="flex items-center justify-between border-b pb-4">
+      <h3 class="text-lg font-semibold">Add New Patient</h3>
+      <button id="close-add-patient" class="rounded p-1 hover:bg-gray-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="mt-6">
+      <form id="patient-form">
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="patient-name">Full Name *</label>
+          <input id="patient-name" type="text" class="form-input w-full" required>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="patient-gender">Gender *</label>
+            <select id="patient-gender" class="form-input w-full" required>
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="patient-dob">Date of Birth *</label>
+            <input id="patient-dob" type="date" class="form-input w-full" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="patient-contact">Contact Number *</label>
+          <input id="patient-contact" type="tel" class="form-input w-full" required>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="patient-email">Email Address</label>
+          <input id="patient-email" type="email" class="form-input w-full">
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="patient-address">Address</label>
+          <textarea id="patient-address" class="form-input w-full" rows="3"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="patient-history">Medical History</label>
+          <textarea id="patient-history" class="form-input w-full" rows="4"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="patient-allergies">Allergies</label>
+          <input id="patient-allergies" type="text" class="form-input w-full">
+        </div>
+        
+        <div class="mt-6 flex space-x-3">
+          <button type="submit" class="btn flex-1 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+            Save Patient
+          </button>
+          <button type="reset" class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Appointment Panel -->
+  <div id="add-appointment-panel" class="slide-in">
+    <div class="flex items-center justify-between border-b pb-4">
+      <h3 class="text-lg font-semibold">Schedule Appointment</h3>
+      <button id="close-add-appointment" class="rounded p-1 hover:bg-gray-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="mt-6">
+      <form id="appointment-form">
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="app-patient">Patient *</label>
+          <select id="app-patient" class="form-input w-full" required>
+            <option value="">Select Patient</option>
+            <option value="P-001">John Smith</option>
+            <option value="P-002">Mary Johnson</option>
+            <option value="P-003">Robert Davis</option>
+            <option value="P-004">Patricia Miller</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="app-doctor">Doctor *</label>
+          <select id="app-doctor" class="form-input w-full" required>
+            <option value="">Select Doctor</option>
+            <option value="D-001">Dr. Sarah Johnson</option>
+            <option value="D-002">Dr. Michael Brown</option>
+            <option value="D-003">Dr. Emily Wilson</option>
+            <option value="D-004">Dr. James Wilson</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="app-department">Department *</label>
+          <select id="app-department" class="form-input w-full" required>
+            <option value="">Select Department</option>
+            <option value="general_medicine">General Medicine</option>
+            <option value="orthopedics">Orthopedics</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="neurology">Neurology</option>
+            <option value="pediatrics">Pediatrics</option>
+          </select>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="app-date">Date *</label>
+            <input id="app-date" type="date" class="form-input w-full" required>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="app-time">Time *</label>
+            <input id="app-time" type="time" class="form-input w-full" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="app-reason">Reason for Visit</label>
+          <textarea id="app-reason" class="form-input w-full" rows="3"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="app-notes">Additional Notes</label>
+          <textarea id="app-notes" class="form-input w-full" rows="3"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="flex items-center">
+            <input type="checkbox" class="mr-2">
+            <span>Send notification to patient</span>
+          </label>
+        </div>
+        
+        <div class="mt-6 flex space-x-3">
+          <button type="submit" class="btn flex-1 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+            Schedule Appointment
+          </button>
+          <button type="reset" class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Staff Panel -->
+  <div id="add-staff-panel" class="slide-in">
+    <div class="flex items-center justify-between border-b pb-4">
+      <h3 class="text-lg font-semibold">Add New Staff</h3>
+      <button id="close-add-staff" class="rounded p-1 hover:bg-gray-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="mt-6">
+      <form id="staff-form">
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="staff-name">Full Name *</label>
+          <input id="staff-name" type="text" class="form-input w-full" required>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="staff-role">Role *</label>
+          <select id="staff-role" class="form-input w-full" required>
+            <option value="">Select Role</option>
+            <option value="doctor">Doctor</option>
+            <option value="nurse">Nurse</option>
+            <option value="receptionist">Receptionist</option>
+            <option value="pharmacist">Pharmacist</option>
+            <option value="lab_technician">Lab Technician</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="staff-department">Department *</label>
+          <select id="staff-department" class="form-input w-full" required>
+            <option value="">Select Department</option>
+            <option value="general_medicine">General Medicine</option>
+            <option value="orthopedics">Orthopedics</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="neurology">Neurology</option>
+            <option value="pediatrics">Pediatrics</option>
+          </select>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="staff-contact">Contact Number *</label>
+            <input id="staff-contact" type="tel" class="form-input w-full" required>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="staff-email">Email Address *</label>
+            <input id="staff-email" type="email" class="form-input w-full" required>
+          </div>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="staff-username">Username *</label>
+            <input id="staff-username" type="text" class="form-input w-full" required>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="staff-password">Password *</label>
+            <input id="staff-password" type="password" class="form-input w-full" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="staff-address">Address</label>
+          <textarea id="staff-address" class="form-input w-full" rows="3"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium">Working Days</label>
+          <div class="flex flex-wrap gap-2">
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-1">
+              <span>Mon</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-1">
+              <span>Tue</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-1">
+              <span>Wed</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-1">
+              <span>Thu</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-1">
+              <span>Fri</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-1">
+              <span>Sat</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-1">
+              <span>Sun</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="mt-6 flex space-x-3">
+          <button type="submit" class="btn flex-1 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+            Save Staff
+          </button>
+          <button type="reset" class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Invoice Panel -->
+  <div id="add-invoice-panel" class="slide-in">
+    <div class="flex items-center justify-between border-b pb-4">
+      <h3 class="text-lg font-semibold">Create New Invoice</h3>
+      <button id="close-add-invoice" class="rounded p-1 hover:bg-gray-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="mt-6">
+      <form id="invoice-form">
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="invoice-patient">Patient *</label>
+          <select id="invoice-patient" class="form-input w-full" required>
+            <option value="">Select Patient</option>
+            <option value="P-001">John Smith</option>
+            <option value="P-002">Mary Johnson</option>
+            <option value="P-003">Robert Davis</option>
+            <option value="P-004">Patricia Miller</option>
+          </select>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="invoice-date">Date *</label>
+            <input id="invoice-date" type="date" class="form-input w-full" required>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="invoice-due-date">Due Date</label>
+            <input id="invoice-due-date" type="date" class="form-input w-full">
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium">Invoice Items</label>
+          
+          <div class="mb-2 overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="border-b text-left text-sm font-medium text-gray-500">
+                  <th class="pb-2">Item</th>
+                  <th class="pb-2">Quantity</th>
+                  <th class="pb-2">Price</th>
+                  <th class="pb-2">Total</th>
+                  <th class="pb-2"></th>
+                </tr>
+              </thead>
+              <tbody id="invoice-items">
+                <tr class="border-b">
+                  <td class="py-2">
+                    <input type="text" class="form-input w-full" placeholder="Item name">
+                  </td>
+                  <td class="py-2">
+                    <input type="number" class="form-input w-20" value="1" min="1">
+                  </td>
+                  <td class="py-2">
+                    <input type="number" class="form-input w-24" step="0.01" placeholder="0.00">
+                  </td>
+                  <td class="py-2">
+                    <span class="font-medium">$0.00</span>
+                  </td>
+                  <td class="py-2">
+                    <button type="button" class="text-red-600 hover:text-red-800">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <button type="button" class="mt-2 text-sm text-blue-600 hover:underline">
+            <i class="fas fa-plus mr-1"></i> Add Another Item
+          </button>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="invoice-discount">Discount</label>
+            <div class="flex">
+              <input id="invoice-discount" type="number" class="form-input w-full" min="0" step="0.01" placeholder="0.00">
+              <span class="flex items-center bg-gray-100 px-3">$</span>
+            </div>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="invoice-tax">Tax</label>
+            <div class="flex">
+              <input id="invoice-tax" type="number" class="form-input w-full" min="0" step="0.01" placeholder="0.00">
+              <span class="flex items-center bg-gray-100 px-3">%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="invoice-payment-method">Payment Method *</label>
+          <select id="invoice-payment-method" class="form-input w-full" required>
+            <option value="">Select Payment Method</option>
+            <option value="cash">Cash</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="mpesa">MPesa</option>
+            <option value="insurance">Insurance</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="invoice-notes">Notes</label>
+          <textarea id="invoice-notes" class="form-input w-full" rows="3"></textarea>
+        </div>
+        
+        <div class="mb-4 rounded border p-4">
+          <div class="flex items-center justify-between">
+            <span class="font-medium">Subtotal:</span>
+            <span>$0.00</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-medium">Tax:</span>
+            <span>$0.00</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-medium">Discount:</span>
+            <span>$0.00</span>
+          </div>
+          <div class="mt-2 flex items-center justify-between border-t pt-2">
+            <span class="text-lg font-bold">Total:</span>
+            <span class="text-lg font-bold">$0.00</span>
+          </div>
+        </div>
+        
+        <div class="mt-6 flex space-x-3">
+          <button type="submit" class="btn flex-1 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+            Generate Invoice
+          </button>
+          <button type="button" class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+            Save as Draft
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Medicine Panel -->
+  <div id="add-medicine-panel" class="slide-in">
+    <div class="flex items-center justify-between border-b pb-4">
+      <h3 class="text-lg font-semibold">Add New Medicine</h3>
+      <button id="close-add-medicine" class="rounded p-1 hover:bg-gray-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="mt-6">
+      <form id="medicine-form">
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="medicine-name">Medicine Name *</label>
+          <input id="medicine-name" type="text" class="form-input w-full" required>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="medicine-category">Category *</label>
+          <select id="medicine-category" class="form-input w-full" required>
+            <option value="">Select Category</option>
+            <option value="antibiotics">Antibiotics</option>
+            <option value="painkillers">Painkillers</option>
+            <option value="antacids">Antacids</option>
+            <option value="antidepressants">Antidepressants</option>
+            <option value="vitamins">Vitamins</option>
+          </select>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="medicine-quantity">Quantity *</label>
+            <input id="medicine-quantity" type="number" class="form-input w-full" min="0" required>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="medicine-unit">Unit *</label>
+            <select id="medicine-unit" class="form-input w-full" required>
+              <option value="boxes">Boxes</option>
+              <option value="bottles">Bottles</option>
+              <option value="strips">Strips</option>
+              <option value="tablets">Tablets</option>
+              <option value="vials">Vials</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="medicine-price">Unit Price *</label>
+            <div class="flex">
+              <span class="flex items-center bg-gray-100 px-3">$</span>
+              <input id="medicine-price" type="number" class="form-input w-full" step="0.01" min="0" required>
+            </div>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="medicine-expiry">Expiry Date *</label>
+            <input id="medicine-expiry" type="date" class="form-input w-full" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="medicine-supplier">Supplier</label>
+          <input id="medicine-supplier" type="text" class="form-input w-full">
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="medicine-description">Description</label>
+          <textarea id="medicine-description" class="form-input w-full" rows="3"></textarea>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="medicine-min-stock">Minimum Stock Level</label>
+            <input id="medicine-min-stock" type="number" class="form-input w-full" min="0">
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="medicine-location">Storage Location</label>
+            <input id="medicine-location" type="text" class="form-input w-full">
+          </div>
+        </div>
+        
+        <div class="mt-6 flex space-x-3">
+          <button type="submit" class="btn flex-1 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+            Save Medicine
+          </button>
+          <button type="reset" class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Lab Test Panel -->
+  <div id="add-test-panel" class="slide-in">
+    <div class="flex items-center justify-between border-b pb-4">
+      <h3 class="text-lg font-semibold">Add Test Result</h3>
+      <button id="close-add-test" class="rounded p-1 hover:bg-gray-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="mt-6">
+      <form id="test-form">
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="test-patient">Patient *</label>
+          <select id="test-patient" class="form-input w-full" required>
+            <option value="">Select Patient</option>
+            <option value="P-001">John Smith</option>
+            <option value="P-002">Mary Johnson</option>
+            <option value="P-003">Robert Davis</option>
+            <option value="P-004">Patricia Miller</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="test-type">Test Type *</label>
+          <select id="test-type" class="form-input w-full" required>
+            <option value="">Select Test Type</option>
+            <option value="blood_test">Blood Test</option>
+            <option value="urine_test">Urine Test</option>
+            <option value="x_ray">X-Ray</option>
+            <option value="mri">MRI Scan</option>
+            <option value="ct_scan">CT Scan</option>
+            <option value="ultrasound">Ultrasound</option>
+          </select>
+        </div>
+        
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block font-medium" for="test-date">Test Date *</label>
+            <input id="test-date" type="date" class="form-input w-full" required>
+          </div>
+          
+          <div>
+            <label class="mb-1 block font-medium" for="test-time">Test Time *</label>
+            <input id="test-time" type="time" class="form-input w-full" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="test-doctor">Referring Doctor</label>
+          <select id="test-doctor" class="form-input w-full">
+            <option value="">Select Doctor</option>
+            <option value="D-001">Dr. Sarah Johnson</option>
+            <option value="D-002">Dr. Michael Brown</option>
+            <option value="D-003">Dr. Emily Wilson</option>
+            <option value="D-004">Dr. James Wilson</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="test-results">Test Results *</label>
+          <textarea id="test-results" class="form-input w-full" rows="5" required></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium" for="test-notes">Notes</label>
+          <textarea id="test-notes" class="form-input w-full" rows="3"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="mb-1 block font-medium">Attach Files</label>
+          <div class="mt-1 rounded border border-dashed border-gray-300 p-4">
+            <div class="flex items-center justify-center">
+              <div class="text-center">
+                <i class="fas fa-file-upload mb-2 text-3xl text-gray-400"></i>
+                <p class="text-sm text-gray-500">Drag and drop files here or click to upload</p>
+                <input type="file" class="mt-2">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="flex items-center">
+            <input type="checkbox" class="mr-2">
+            <span>Notify doctor of results</span>
+          </label>
+        </div>
+        
+        <div class="mt-6 flex space-x-3">
+          <button type="submit" class="btn flex-1 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+            Save Test Results
+          </button>
+          <button type="reset" class="btn rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Background Overlay -->
+  <div id="overlay" class="overlay"></div>
+  
+  <!-- Notifications dropdown -->
+  <div id="notifications-dropdown" class="hidden fixed right-4 top-16 z-50 w-80 rounded-lg bg-white shadow-lg">
+    <div class="border-b p-3">
+      <h3 class="font-medium">Notifications</h3>
+    </div>
+    <div class="max-h-80 overflow-y-auto">
+      <div class="border-b p-3 hover:bg-gray-50">
+        <p class="font-medium">New Appointment</p>
+        <p class="text-sm text-gray-600">John Smith scheduled for Jun 15, 10:30 AM</p>
+        <p class="mt-1 text-xs text-gray-500">10 minutes ago</p>
+      </div>
+      <div class="border-b p-3 hover:bg-gray-50">
+        <p class="font-medium">Low Stock Alert</p>
+        <p class="text-sm text-gray-600">Amoxicillin 500mg is running low (5 boxes remaining)</p>
+        <p class="mt-1 text-xs text-gray-500">30 minutes ago</p>
+      </div>
+      <div class="border-b p-3 hover:bg-gray-50">
+        <p class="font-medium">Test Results Ready</p>
+        <p class="text-sm text-gray-600">Robert Davis - Blood Test results are available</p>
+        <p class="mt-1 text-xs text-gray-500">1 hour ago</p>
+      </div>
+      <div class="p-3 hover:bg-gray-50">
+        <p class="font-medium">Payment Received</p>
+        <p class="text-sm text-gray-600">$350.00 received from Mary Johnson</p>
+        <p class="mt-1 text-xs text-gray-500">2 hours ago</p>
+      </div>
+    </div>
+    <div class="border-t p-2 text-center">
+      <a href="javascript:void(0)" class="text-sm text-blue-600 hover:underline">View All Notifications</a>
+    </div>
+  </div>
+
+  <script id="app-script">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Login Form Handling
+      document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const role = document.getElementById('role').value;
+        
+        if (username && password) {
+          // Update user info based on role
+          document.getElementById('user-name').textContent = username;
+          document.getElementById('user-role').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+          
+          // Hide login screen, show app
+          document.getElementById('login-screen').classList.add('hidden');
+          document.getElementById('app-container').classList.remove('hidden');
+          
+          // Show appropriate menu items based on role
+          setupRoleBasedUI(role);
+        }
+      });
+      
+      // Setup role-based UI elements
+      function setupRoleBasedUI(role) {
+        const menuItems = document.querySelectorAll('.menu-item');
+        
+        // Hide all menu items first
+        menuItems.forEach(item => {
+          item.classList.add('hidden');
+        });
+        
+        // Show common menu items
+        document.querySelector('[data-page="dashboard"]').classList.remove('hidden');
+        
+        // Show role-specific menu items
+        switch(role) {
+          case 'admin':
+            document.querySelector('[data-page="patients"]').classList.remove('hidden');
+            document.querySelector('[data-page="appointments"]').classList.remove('hidden');
+            document.querySelector('[data-page="staff"]').classList.remove('hidden');
+            document.querySelector('[data-page="billing"]').classList.remove('hidden');
+            document.querySelector('[data-page="pharmacy"]').classList.remove('hidden');
+            document.querySelector('[data-page="laboratory"]').classList.remove('hidden');
+            document.querySelector('[data-page="reports"]').classList.remove('hidden');
+            break;
+          case 'doctor':
+            document.querySelector('[data-page="patients"]').classList.remove('hidden');
+            document.querySelector('[data-page="appointments"]').classList.remove('hidden');
+            document.querySelector('[data-page="laboratory"]').classList.remove('hidden');
+            break;
+          case 'receptionist':
+            document.querySelector('[data-page="patients"]').classList.remove('hidden');
+            document.querySelector('[data-page="appointments"]').classList.remove('hidden');
+            document.querySelector('[data-page="billing"]').classList.remove('hidden');
+            break;
+          case 'pharmacist':
+            document.querySelector('[data-page="pharmacy"]').classList.remove('hidden');
+            document.querySelector('[data-page="patients"]').classList.remove('hidden');
+            break;
+          case 'lab_technician':
+            document.querySelector('[data-page="laboratory"]').classList.remove('hidden');
+            document.querySelector('[data-page="patients"]').classList.remove('hidden');
+            break;
+        }
+      }
+      
+      // Sidebar Toggle
+      document.getElementById('toggle-sidebar').addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-collapsed');
+        
+        const icon = this.querySelector('i');
+        if (document.body.classList.contains('sidebar-collapsed')) {
+          icon.classList.remove('fa-chevron-left');
+          icon.classList.add('fa-chevron-right');
+        } else {
+          icon.classList.remove('fa-chevron-right');
+          icon.classList.add('fa-chevron-left');
+        }
+      });
+      
+      // Menu button for mobile
+      document.getElementById('menu-button').addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-collapsed');
+      });
+      
+      // Logout Button
+      document.getElementById('logout-button').addEventListener('click', function() {
+        document.getElementById('app-container').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+      });
+      
+      // Navigation between pages
+      document.querySelectorAll('.menu-item[data-page]').forEach(item => {
+        item.addEventListener('click', function() {
+          const pageId = this.getAttribute('data-page');
+          
+          // Update active state
+          document.querySelectorAll('.menu-item').forEach(menuItem => {
+            menuItem.classList.remove('active');
+          });
+          this.classList.add('active');
+          
+          // Hide all pages
+          document.querySelectorAll('.page-content').forEach(page => {
+            page.classList.add('hidden');
+          });
+          
+          // Show selected page
+          document.getElementById(`${pageId}-page`).classList.remove('hidden');
+          
+          // Update page title
+          document.getElementById('page-title').textContent = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+        });
+      });
+      
+      // Notifications dropdown
+      document.getElementById('notifications-button').addEventListener('click', function() {
+        document.getElementById('notifications-dropdown').classList.toggle('hidden');
+      });
+      
+      // Close notifications when clicking elsewhere
+      document.addEventListener('click', function(e) {
+        const notificationsButton = document.getElementById('notifications-button');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
+        
+        if (!notificationsButton.contains(e.target) && !notificationsDropdown.contains(e.target)) {
+          notificationsDropdown.classList.add('hidden');
+        }
+      });
+      
+      // Slide-in panel handling
+      const panels = {
+        'add-patient-btn': 'add-patient-panel',
+        'add-appointment-btn': 'add-appointment-panel',
+        'add-staff-btn': 'add-staff-panel',
+        'add-invoice-btn': 'add-invoice-panel',
+        'add-medicine-btn': 'add-medicine-panel',
+        'add-test-btn': 'add-test-panel'
+      };
+      
+      // Open panels
+      Object.keys(panels).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          btn.addEventListener('click', function() {
+            document.getElementById(panels[btnId]).classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+          });
+        }
+      });
+      
+      // Close panels
+      document.querySelectorAll('[id^="close-"]').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+          this.closest('.slide-in').classList.remove('active');
+          document.getElementById('overlay').classList.remove('active');
+        });
+      });
+      
+      // Close panel when clicking on overlay
+      document.getElementById('overlay').addEventListener('click', function() {
+        document.querySelectorAll('.slide-in.active').forEach(panel => {
+          panel.classList.remove('active');
+        });
+        this.classList.remove('active');
+      });
+      
+      // Initialize Charts
+      initializeCharts();
+      
+      // Initialize Calendar
+      initializeCalendar();
+    });
+    
+    function initializeCharts() {
+      // Revenue Chart
+      if (document.getElementById('revenueChart')) {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+              label: 'Revenue',
+              data: [12500, 19200, 15700, 18600, 23400, 24580],
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderColor: 'rgba(59, 130, 246, 1)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function(value) {
+                    return '$' + value;
+                  }
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
+      }
+      
+      // Payment Chart
+      if (document.getElementById('paymentChart')) {
+        const ctx = document.getElementById('paymentChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Paid', 'Pending', 'Overdue'],
+            datasets: [{
+              data: [70, 20, 10],
+              backgroundColor: [
+                'rgba(34, 197, 94, 0.7)',
+                'rgba(234, 179, 8, 0.7)',
+                'rgba(239, 68, 68, 0.7)'
+              ],
+              borderColor: [
+                'rgba(34, 197, 94, 1)',
+                'rgba(234, 179, 8, 1)',
+                'rgba(239, 68, 68, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            },
+            cutout: '70%'
+          }
+        });
+      }
+      
+      // Inventory Chart
+      if (document.getElementById('inventoryChart')) {
+        const ctx = document.getElementById('inventoryChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Antibiotics', 'Painkillers', 'Antacids', 'Vitamins', 'Other'],
+            datasets: [{
+              label: 'Stock Level',
+              data: [45, 32, 27, 18, 15],
+              backgroundColor: [
+                'rgba(59, 130, 246, 0.7)',
+                'rgba(16, 185, 129, 0.7)',
+                'rgba(245, 158, 11, 0.7)',
+                'rgba(139, 92, 246, 0.7)',
+                'rgba(107, 114, 128, 0.7)'
+              ],
+              borderRadius: 5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
+      }
+      
+      // Test Category Chart
+      if (document.getElementById('testCategoryChart')) {
+        const ctx = document.getElementById('testCategoryChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ['Blood Tests', 'Urine Tests', 'X-Ray', 'MRI Scan'],
+            datasets: [{
+              data: [64, 28, 42, 20],
+              backgroundColor: [
+                'rgba(59, 130, 246, 0.7)',
+                'rgba(16, 185, 129, 0.7)',
+                'rgba(245, 158, 11, 0.7)',
+                'rgba(239, 68, 68, 0.7)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  boxWidth: 12,
+                  font: {
+                    size: 11
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Revenue Report Chart
+      if (document.getElementById('revenueReportChart')) {
+        const ctx = document.getElementById('revenueReportChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [
+              {
+                label: 'Consultations',
+                data: [5200, 7800, 6300, 8100, 9600, 10200],
+                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                tension: 0.4,
+                fill: false
+              },
+              {
+                label: 'Pharmacy',
+                data: [4300, 6200, 5400, 6800, 7500, 8400],
+                borderColor: 'rgba(16, 185, 129, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                tension: 0.4,
+                fill: false
+              },
+              {
+                label: 'Laboratory',
+                data: [3000, 5200, 4000, 3700, 6300, 5980],
+                borderColor: 'rgba(245, 158, 11, 1)',
+                backgroundColor: 'rgba(245, 158, 11, 0.5)',
+                tension: 0.4,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function(value) {
+                    return '$' + value;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Patient Visit Chart
+      if (document.getElementById('patientVisitChart')) {
+        const ctx = document.getElementById('patientVisitChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Visits',
+              data: [42, 38, 45, 40, 55, 32, 15],
+              backgroundColor: 'rgba(59, 130, 246, 0.7)',
+              borderRadius: 5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
+      }
+    }
+    
+    function initializeCalendar() {
+      if (document.getElementById('appointment-calendar')) {
+        const calendarEl = document.getElementById('appointment-calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          events: [
+            {
+              title: 'John Smith',
+              start: '2025-06-15T10:30:00',
+              backgroundColor: '#3b82f6'
+            },
+            {
+              title: 'Mary Johnson',
+              start: '2025-06-15T11:00:00',
+              backgroundColor: '#10b981'
+            },
+            {
+              title: 'Robert Davis',
+              start: '2025-06-15T11:45:00',
+              backgroundColor: '#10b981'
+            },
+            {
+              title: 'Patricia Miller',
+              start: '2025-06-15T12:15:00',
+              backgroundColor: '#f59e0b'
+            }
+          ],
+          eventClick: function(info) {
+            Swal.fire({
+              title: 'Appointment Details',
+              html: `
+                <div class="text-left">
+                  <p><strong>Patient:</strong> ${info.event.title}</p>
+                  <p><strong>Date:</strong> ${info.event.start.toLocaleDateString()}</p>
+                  <p><strong>Time:</strong> ${info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+              `,
+              showCancelButton: true,
+              confirmButtonText: 'Edit',
+              cancelButtonText: 'Close'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                // Open appointment edit panel
+                document.getElementById('add-appointment-panel').classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+              }
+            });
+          }
+        });
+        calendar.render();
+      }
+    }
+  </script>
+</body>
+</html>
